@@ -1,0 +1,53 @@
+:root {
+  --primary-color: #0064ff;
+  --bg-fade-color: #f5f5fa;
+  --hover-bg-color: #e2edff;
+  --hover-bg-secondary: #e4e4e5;
+  --fade-color: #bcbcc1;
+  --white-color: white;
+}
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+* {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+img,
+picture,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+input,
+select,
+textarea {
+  background-color: transparent;
+  outline: none;
+}
+button {
+  cursor: pointer;
+  background-color: transparent;
+  outline: none;
+  border: 0;
+}
+body {
+  min-height: 100vh;
+  font-weight: 400;
+  font-size: 16px;
+  line-height: 1;
+}
+a,
+link,
+Link,
+:any-link,
+:any-link:hover,
+li {
+  text-decoration: none;
+  list-style: none;
+  color: inherit;
+}
