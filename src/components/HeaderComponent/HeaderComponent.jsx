@@ -1,13 +1,14 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { userHook } from "../../hooks/userHook";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import logo from '/images/logo.png';
 import { Button, Col, Form, Input, Modal, Row, Tabs } from "antd";
 import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, SmileOutlined } from '@ant-design/icons';
 import { SearchButton, WrapperSearch } from "./style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useMutationHook } from "../../hooks/useMutationHook";
 import * as UserService from '../../services/UserService';
+import { jwtDecode } from "jwt-decode";
 
 export default function HeaderComponent() {
   const user = userHook();
@@ -167,15 +168,38 @@ function ModalAccount({ isVisible, handleModalToggle }) {
   };
 
   const mutationSignin = useMutationHook(data => UserService.userSignin(data));
+  const mutationSignup = useMutationHook(data => UserService.userSignup(data));
+
+  const { data, isLoading, isSuccess } = mutationSignin
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (isSuccess) {
+      navigate("/")
+      localStorage.setItem('access_token', data?.access_token)
+      if (data) {
+        const decoded = jwtDecode(data?.access_token);
+        if (decoded) {
+          // console.log(data?.access_token);
+          handleGetUserData(decoded.payload.id, data?.access_token)
+        }
+      }
+    }
+  }, [isSuccess])
 
   const handleLoginFormSubmit = () => {
     mutationSignin.mutate(accountLogin);
-    console.log(accountLogin);
   };
+
+  const handleGetUserData = async (id, token) => {
+    const res = await UserService.getUserData(id, token)
+    console.log(res);
+  }
 
   const handleSignupFormSubmit = () => {
     // Uncomment this line when you are ready to implement signup functionality.
-    // mutationSignup.mutate(accountSignup);
+    mutationSignup.mutate(accountSignup);
   };
 
   const renderLoginForm = () => (
@@ -194,10 +218,11 @@ function ModalAccount({ isVisible, handleModalToggle }) {
       >
         <Input name="password" onChange={(e) => { handleOnchange(e, 'signin') }} type="password" placeholder="Enter your password" />
       </Form.Item>
-      {/* Uncomment this block when you have error handling in place */}
-      {/* <Form.Item>
+
+      <Form.Item>
         {mutationSignin && mutationSignin.data?.status === 'ERR' && <span>{mutationSignin?.data.message}</span>}
-      </Form.Item> */}
+      </Form.Item>
+
       <Form.Item style={{ textAlign: 'right' }}>
         <Button type="primary" htmlType="submit">
           Login
