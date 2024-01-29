@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const WrapperButton = styled.button`
-  padding: 10px 25px;
+  padding: 10px;
   align-items: center;
   display: inline-block;
   text-align: center;
@@ -12,12 +12,13 @@ export const WrapperButton = styled.button`
         props.variant === 'primary-outlined-rev' ? '4px' : "5px"};
 
   background-color: ${(props) =>
-        props.variant === 'button-primary' ? 'transparent' :
-            props.variant === 'facebook-outlined'
-                ? '#4267B2'
-                : props.variant === 'google-outlined'
-                    ? '#DC3545'
-                    : 'inherit'};
+        props.variant === 'danger' ? 'red' :
+            props.variant === 'button-primary' ? 'transparent' :
+                props.variant === 'facebook-outlined'
+                    ? '#4267B2'
+                    : props.variant === 'google-outlined'
+                        ? '#DC3545'
+                        : 'inherit'};
   
   border: 1px solid
     ${(props) =>
@@ -29,7 +30,8 @@ export const WrapperButton = styled.button`
                     : 'inherit'}; 
   
   color: ${(props) =>
-        props.variant === 'button-transparent' ? 'var(--primary-color)' : 'inherit'};
+        props.variant === 'danger' ? 'white' :
+            props.variant === 'button-transparent' ? 'var(--primary-color)' : 'inherit'};
 
   &:hover {
     box-shadow: inset rgba(100, 100, 111, 0.2) 0px 7px 50px 10px;

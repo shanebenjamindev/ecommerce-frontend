@@ -2,18 +2,20 @@ import { Link, useNavigate } from "react-router-dom";
 import { userHook } from "../../hooks/userHook";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import logo from '/images/logo.png';
-import { Button, Col, Form, Input, Modal, Row, Tabs } from "antd";
+import { Button, Col, Dropdown, Form, Input, Modal, Row, Tabs } from "antd";
 import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, SmileOutlined } from '@ant-design/icons';
 import { SearchButton, WrapperSearch } from "./style";
 import { useEffect, useState } from "react";
 import { useMutationHook } from "../../hooks/useMutationHook";
 import * as UserService from '../../services/UserService';
 import { jwtDecode } from "jwt-decode";
+import { useDispatch, useSelector } from "react-redux";
+import { updateUser } from "../../redux/slides/userSlide";
+
 
 export default function HeaderComponent() {
-  const user = userHook();
   const [isModalVisible, setIsModalVisible] = useState(false);
-
+  const user = useSelector(state => state.user);
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -81,21 +83,15 @@ export default function HeaderComponent() {
                     </Link>
                   </li>
 
-                  {user ? <>
+                  {user?.name ?
                     <li className="nav-item">
-                      <Link className="nav-link d-flex align-items-center" to={`/admin/admin-info/${user.id}`}>
-                        <span className="">{`${user.name}'s profile`}</span>
-                        <img width="20" height="20" alt="" src={user.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
-                      </Link>
+                      <Dropdown overlay={<div className="bg-light"><ButtonComponent variant="danger" text="Log out"></ButtonComponent></div>} placement="bottomCenter">
+                        <Link className="nav-link d-flex" to={`/admin/admin-info/${user.id}`}>
+                          <img width="25" height="25" alt="" src={user.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
+                          <span className="ml-1">{`${user.name}`}</span>
+                        </Link>
+                      </Dropdown>
                     </li>
-                    <li className="nav-item">
-                      <button
-                        className="btn btn-danger"
-                      >
-                        Logout
-                      </button>
-                    </li>
-                  </>
                     :
                     <li onClick={showModal}>
                       <ButtonComponent className="nav-link" variant="button-secondary" text={<><SmileOutlined /> Tài khoản</>} />
@@ -134,7 +130,6 @@ const { TabPane } = Tabs;
 
 function ModalAccount({ isVisible, handleModalToggle }) {
   const [form] = Form.useForm();
-
   const [activeTab, setActiveTab] = useState('login');
   const [accountSignup, setNewAccount] = useState({
     name: "",
@@ -167,38 +162,38 @@ function ModalAccount({ isVisible, handleModalToggle }) {
     formType === 'signup' ? setNewAccount(updatedAccount) : setLoginAccount(updatedAccount);
   };
 
-  const mutationSignin = useMutationHook(data => UserService.userSignin(data));
   const mutationSignup = useMutationHook(data => UserService.userSignup(data));
 
-  const { data, isLoading, isSuccess } = mutationSignin
-
+  const mutation = useMutationHook(
+    data => UserService.userSignin(data)
+  )
+  const { data, isSuccess } = mutation;
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   useEffect(() => {
     if (isSuccess) {
-      navigate("/")
-      localStorage.setItem('access_token', data?.access_token)
-      if (data) {
+      navigate("/");
+      localStorage.setItem('access_token', data?.access_token);
+
+      if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
-        if (decoded) {
-          // console.log(data?.access_token);
-          handleGetUserData(decoded.payload.id, data?.access_token)
+        if (decoded?.payload.id) {
+          handleGetUserDetail(decoded?.payload.id, data?.access_token)
         }
       }
     }
-  }, [isSuccess])
 
+  }, [isSuccess]);
+
+  const handleGetUserDetail = async (id, token) => {
+    const res = await UserService.getUserData(id, token);
+    dispatch(updateUser({ ...res?.data, access_token: token }))
+  }
   const handleLoginFormSubmit = () => {
-    mutationSignin.mutate(accountLogin);
+    mutation.mutate(accountLogin);
   };
 
-  const handleGetUserData = async (id, token) => {
-    const res = await UserService.getUserData(id, token)
-    console.log(res);
-  }
-
   const handleSignupFormSubmit = () => {
-    // Uncomment this line when you are ready to implement signup functionality.
     mutationSignup.mutate(accountSignup);
   };
 
@@ -220,7 +215,7 @@ function ModalAccount({ isVisible, handleModalToggle }) {
       </Form.Item>
 
       <Form.Item>
-        {mutationSignin && mutationSignin.data?.status === 'ERR' && <span>{mutationSignin?.data.message}</span>}
+        {mutation && mutation.data?.status === 'ERR' && <span>{mutation?.data.message}</span>}
       </Form.Item>
 
       <Form.Item style={{ textAlign: 'right' }}>
