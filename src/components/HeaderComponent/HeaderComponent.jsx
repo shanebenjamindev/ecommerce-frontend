@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { userHook } from "../../hooks/userHook";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import logo from '/images/logo.png';
-import { Button, Col, Dropdown, Form, Input, Modal, Row, Tabs } from "antd";
+import { Button, Col, Dropdown, Form, Input, Modal, Row, Tabs, Popover } from "antd";
 import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, SmileOutlined } from '@ant-design/icons';
 import { SearchButton, WrapperSearch } from "./style";
 import { useEffect, useState } from "react";
@@ -10,12 +10,32 @@ import { useMutationHook } from "../../hooks/useMutationHook";
 import * as UserService from '../../services/UserService';
 import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../../redux/slides/userSlide";
+import { updateUser, resetUser } from "../../redux/slides/userSlide";
 
 
 export default function HeaderComponent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const user = useSelector(state => state.user);
+
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    await UserService.userLogout();
+    localStorage.removeItem('access_token');
+    dispatch(resetUser())
+  }
+
+  const contentDropdown = (
+    <Col>
+      <Link to={`/admin/admin-info/${user.id}`}>
+        <p className="ml-1">Trang cá nhân</p>
+      </Link>
+      <Row justify={"center"}>
+        <ButtonComponent width={"100%"} variant="danger" text="Log out" onClick={handleLogout} />
+      </Row>
+    </Col>
+  );
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -85,12 +105,12 @@ export default function HeaderComponent() {
 
                   {user?.name ?
                     <li className="nav-item">
-                      <Dropdown overlay={<div className="bg-light"><ButtonComponent variant="danger" text="Log out"></ButtonComponent></div>} placement="bottomCenter">
+                      <Popover placement="bottom" content={contentDropdown}>
                         <Link className="nav-link d-flex" to={`/admin/admin-info/${user.id}`}>
                           <img width="25" height="25" alt="" src={user.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
                           <span className="ml-1">{`${user.name}`}</span>
                         </Link>
-                      </Dropdown>
+                      </Popover>
                     </li>
                     :
                     <li onClick={showModal}>
@@ -121,8 +141,8 @@ export default function HeaderComponent() {
             </div>
           </Row>
         </Col>
-      </nav>
-    </div>
+      </nav >
+    </div >
   );
 }
 
@@ -170,24 +190,26 @@ function ModalAccount({ isVisible, handleModalToggle }) {
   const { data, isSuccess } = mutation;
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
   useEffect(() => {
     if (isSuccess) {
       navigate("/");
-      localStorage.setItem('access_token', data?.access_token);
+      localStorage.setItem('access_token', data?.access_token)
+      localStorage.setItem('refresh_token', data?.refresh_token)
 
       if (data?.access_token) {
         const decoded = jwtDecode(data?.access_token);
-        if (decoded?.payload.id) {
-          handleGetUserDetail(decoded?.payload.id, data?.access_token)
+        if (decoded?.id) {
+          handleGetUserDetail(decoded?.id, data?.access_token);
         }
       }
     }
 
   }, [isSuccess]);
 
-  const handleGetUserDetail = async (id, token) => {
-    const res = await UserService.getUserData(id, token);
-    dispatch(updateUser({ ...res?.data, access_token: token }))
+  const handleGetUserDetail = async (id, access_token) => {
+    const res = await UserService.getDetailsUser(id, access_token)
+    dispatch(updateUser({ ...res?.data, access_token }))
   }
   const handleLoginFormSubmit = () => {
     mutation.mutate(accountLogin);
