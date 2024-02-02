@@ -19,7 +19,7 @@ export const userLogout = async () => {
 export const getDetailsUser = async (id, access_token) => {
     const res = await axios.get(`${VITE_SOME_KEY}/user/detail-user/${id}`, {
         headers: {
-            token: `Bearer ${access_token}`,
+            token: `Beare ${access_token}`,
         }
     });
     return res.data;

@@ -1,28 +1,51 @@
-import { Link, useNavigate } from "react-router-dom";
-import { userHook } from "../../hooks/userHook";
+import { Link } from "react-router-dom";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import logo from '/images/logo.png';
-import { Button, Col, Dropdown, Form, Input, Modal, Row, Tabs, Popover } from "antd";
+import { Col, Row, Popover } from "antd";
 import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, SmileOutlined } from '@ant-design/icons';
 import { SearchButton, WrapperSearch } from "./style";
 import { useEffect, useState } from "react";
-import { useMutationHook } from "../../hooks/useMutationHook";
 import * as UserService from '../../services/UserService';
-import { jwtDecode } from "jwt-decode";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser, resetUser } from "../../redux/slides/userSlide";
+import { resetUser, updateUser } from "../../redux/slides/userSlide";
+import PopupAccountComponent from "../PopupAccountComponent/PopupAccountComponent";
+import Loading from "../LoadingComponent/LoadingComponent";
+import { jwtDecode } from "jwt-decode";
 
 
 export default function HeaderComponent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const user = useSelector(state => state.user);
-
   const dispatch = useDispatch();
 
+  useEffect(() => {
+    const access_token = localStorage.getItem('access_token');
+    if (access_token) {
+      const decoded = jwtDecode(access_token);
+      if (decoded?.id) {
+        handleGetUserDetail(decoded?.id, access_token);
+      }
+    }
+  }, []);
+
+  const handleGetUserDetail = async (id, access_token) => {
+    try {
+      const res = await UserService.getDetailsUser(id, access_token);
+      dispatch(updateUser({ ...res.data, access_token }));
+    } catch (error) {
+      console.error("Error fetching user details");
+    }
+  }
+
+  const [loading, setLoading] = useState(false)
+
   const handleLogout = async () => {
+    setLoading(true)
     await UserService.userLogout();
-    localStorage.removeItem('access_token');
+    localStorage.removeItem("access_token")
+    localStorage.removeItem("refresh_token")
     dispatch(resetUser())
+    setLoading(false)
   }
 
   const contentDropdown = (
@@ -31,7 +54,7 @@ export default function HeaderComponent() {
         <p className="ml-1">Trang cá nhân</p>
       </Link>
       <Row justify={"center"}>
-        <ButtonComponent width={"100%"} variant="danger" text="Log out" onClick={handleLogout} />
+        <button width={"100%"} onClick={handleLogout}>Out</button>
       </Row>
     </Col>
   );
@@ -102,21 +125,24 @@ export default function HeaderComponent() {
                       </>} />
                     </Link>
                   </li>
+                  <Loading isLoading={loading} >
 
-                  {user?.name ?
-                    <li className="nav-item">
-                      <Popover placement="bottom" content={contentDropdown}>
-                        <Link className="nav-link d-flex" to={`/admin/admin-info/${user.id}`}>
-                          <img width="25" height="25" alt="" src={user.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
-                          <span className="ml-1">{`${user.name}`}</span>
-                        </Link>
-                      </Popover>
-                    </li>
-                    :
-                    <li onClick={showModal}>
-                      <ButtonComponent className="nav-link" variant="button-secondary" text={<><SmileOutlined /> Tài khoản</>} />
-                    </li>
-                  }
+                    {user?.name ?
+                      <li className="nav-item">
+                        <Popover placement="bottom" content={contentDropdown}>
+                          <Link className="nav-link d-flex" to={`/admin/admin-info/${user.id}`}>
+                            <img width="25" height="25" alt="" src={user.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
+                            <span className="ml-1">{`${user.name}`}</span>
+                          </Link>
+                        </Popover>
+                      </li>
+                      :
+                      <li onClick={showModal}>
+                        <ButtonComponent className="nav-link" variant="button-secondary" text={<><SmileOutlined /> Tài khoản</>} />
+                      </li>
+                    }
+                  </Loading>
+
                   <li className="nav-item">
                     <ButtonComponent className="nav-link" variant="button-primary" text={<ShoppingCartOutlined />} />
                   </li>
@@ -124,7 +150,6 @@ export default function HeaderComponent() {
               </div>
             </Col>
           </Row>
-          <ModalAccount isVisible={isModalVisible} handleModalToggle={handleCancel} />
           <Row className="mt-2" justify={"space-between"}>
             <div>
               điện gia dụng
@@ -142,185 +167,7 @@ export default function HeaderComponent() {
           </Row>
         </Col>
       </nav >
+      <PopupAccountComponent isVisible={isModalVisible} handleModalToggle={handleCancel} />
     </div >
-  );
-}
-
-const { TabPane } = Tabs;
-
-function ModalAccount({ isVisible, handleModalToggle }) {
-  const [form] = Form.useForm();
-  const [activeTab, setActiveTab] = useState('login');
-  const [accountSignup, setNewAccount] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    phone: ""
-  });
-  const [accountLogin, setLoginAccount] = useState({
-    email: "",
-    password: "",
-  });
-
-  const handleOk = () => {
-    handleModalToggle(false);
-  };
-
-  const handleCancel = () => {
-    handleModalToggle(false);
-  };
-
-  const handleTabChange = (key) => {
-    setActiveTab(key);
-  };
-
-  const handleOnchange = (e, formType) => {
-    const updatedAccount = formType === 'signup' ? { ...accountSignup } : { ...accountLogin };
-    updatedAccount[e.target.name] = e.target.value;
-
-    formType === 'signup' ? setNewAccount(updatedAccount) : setLoginAccount(updatedAccount);
-  };
-
-  const mutationSignup = useMutationHook(data => UserService.userSignup(data));
-
-  const mutation = useMutationHook(
-    data => UserService.userSignin(data)
-  )
-  const { data, isSuccess } = mutation;
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (isSuccess) {
-      navigate("/");
-      localStorage.setItem('access_token', data?.access_token)
-      localStorage.setItem('refresh_token', data?.refresh_token)
-
-      if (data?.access_token) {
-        const decoded = jwtDecode(data?.access_token);
-        if (decoded?.id) {
-          handleGetUserDetail(decoded?.id, data?.access_token);
-        }
-      }
-    }
-
-  }, [isSuccess]);
-
-  const handleGetUserDetail = async (id, access_token) => {
-    const res = await UserService.getDetailsUser(id, access_token)
-    dispatch(updateUser({ ...res?.data, access_token }))
-  }
-  const handleLoginFormSubmit = () => {
-    mutation.mutate(accountLogin);
-  };
-
-  const handleSignupFormSubmit = () => {
-    mutationSignup.mutate(accountSignup);
-  };
-
-  const renderLoginForm = () => (
-    <Form form={form} onFinish={handleLoginFormSubmit}>
-      <Form.Item
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 19 }}
-        label="Email"
-      >
-        <Input name="email" onChange={(e) => { handleOnchange(e, 'signin') }} placeholder="Enter your email" />
-      </Form.Item>
-      <Form.Item
-        labelCol={{ span: 5 }}
-        wrapperCol={{ span: 19 }}
-        label="Password"
-      >
-        <Input name="password" onChange={(e) => { handleOnchange(e, 'signin') }} type="password" placeholder="Enter your password" />
-      </Form.Item>
-
-      <Form.Item>
-        {mutation && mutation.data?.status === 'ERR' && <span>{mutation?.data.message}</span>}
-      </Form.Item>
-
-      <Form.Item style={{ textAlign: 'right' }}>
-        <Button type="primary" htmlType="submit">
-          Login
-        </Button>
-      </Form.Item>
-    </Form>
-  );
-
-  const renderSignupForm = () => (
-    <Form onFinish={handleSignupFormSubmit}>
-      <Form.Item
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 16 }}
-        label="Username"
-      >
-        <Input name="name" onChange={(e) => { handleOnchange(e, 'signup') }} placeholder="Enter your name" />
-      </Form.Item>
-
-      <Form.Item
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 16 }}
-        label="Email"
-      >
-        <Input name="email" onChange={(e) => { handleOnchange(e, 'signup') }} type="email" placeholder="Enter your email" />
-      </Form.Item>
-
-      <Form.Item
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 16 }}
-        label="Phone"
-      >
-        <Input name="phone" onChange={(e) => { handleOnchange(e, 'signup') }} type='number' placeholder="Enter your phone number" />
-      </Form.Item>
-
-      <Form.Item
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 16 }}
-        label="Password"
-      >
-        <Input name="password" onChange={(e) => { handleOnchange(e, 'signup') }} type="password" placeholder="Enter your password" />
-      </Form.Item>
-
-      <Form.Item
-        labelCol={{ span: 7 }}
-        wrapperCol={{ span: 16 }}
-        label="Confirm Password"
-      >
-        <Input name="confirmPassword" onChange={(e) => { handleOnchange(e, 'signup') }} type="password" placeholder="Confirm your password" />
-      </Form.Item>
-      {/* Uncomment this block when you have error handling in place */}
-      {/* <Form.Item>
-        {mutationSignup && mutationSignup.data?.status === 'ERR' && <span>{mutationSignup?.data.message}</span>}
-      </Form.Item> */}
-      {/* Uncomment this block when you have loading state handling in place */}
-      {/* <LoadingComponent isLoading={mutationSignup.data}>
-        <Form.Item style={{ textAlign: 'right' }}>
-          <Button type="primary" htmlType="submit">
-            Signup
-          </Button>
-        </Form.Item>
-      </LoadingComponent> */}
-    </Form>
-  );
-
-  return (
-    <Modal
-      title="Login / Signup"
-      visible={isVisible}
-      onOk={handleOk}
-      onCancel={handleCancel}
-      footer={null}
-    >
-      <Tabs activeKey={activeTab} onChange={handleTabChange}>
-        <TabPane tab="Login" key="login">
-          {renderLoginForm()}
-        </TabPane>
-
-        <TabPane tab="Signup" key="signup">
-          {renderSignupForm()}
-        </TabPane>
-      </Tabs>
-    </Modal>
   );
 }

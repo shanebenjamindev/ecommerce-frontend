@@ -1,9 +1,11 @@
 import { Spin } from 'antd'
 
-export default function LoadingComponent({ children, isLoading, delay = 200 }) {
+const Loading = ({ children, isLoading, deday = 200 }) => {
     return (
-        <Spin spinning={isLoading} delay={delay}>
+        <Spin spinning={isLoading} delay={deday}>
             {children}
         </Spin>
     )
 }
+
+export default Loading
