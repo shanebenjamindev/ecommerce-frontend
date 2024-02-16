@@ -15,11 +15,11 @@ import { jwtDecode } from "jwt-decode";
 
 export default function HeaderComponent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const user = useSelector(state => state.user);
+  const user = useSelector(state => state.user) || null;
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const access_token = localStorage.getItem('access_token');
+    const access_token = localStorage?.getItem('access_token');
     if (access_token) {
       const decoded = jwtDecode(access_token);
       if (decoded?.id) {
@@ -50,11 +50,11 @@ export default function HeaderComponent() {
 
   const contentDropdown = (
     <Col>
-      <Link to={`/admin/admin-info/${user.id}`}>
-        <p className="ml-1">Trang cá nhân</p>
+      <Link to={`/profile`}>
+        Trang cá nhân
       </Link>
       <Row justify={"center"}>
-        <button width={"100%"} onClick={handleLogout}>Out</button>
+        <button width={"100%"} onClick={handleLogout}>Log Out</button>
       </Row>
     </Col>
   );
@@ -72,7 +72,7 @@ export default function HeaderComponent() {
       <nav className="w-75 m-auto admin__Navbar navbar navbar-expand-lg navbar-light justify-content-between">
 
         <Col md={2}>
-          <Link className="navbar-brand d-flex justify-content-center align-items-center" to="/admin/dashboard">
+          <Link className="navbar-brand d-flex justify-content-center align-items-center" to="/">
             <img
               width="75px"
               src={logo}
@@ -126,12 +126,11 @@ export default function HeaderComponent() {
                     </Link>
                   </li>
                   <Loading isLoading={loading} >
-
                     {user?.name ?
                       <li className="nav-item">
                         <Popover placement="bottom" content={contentDropdown}>
-                          <Link className="nav-link d-flex" to={`/admin/admin-info/${user.id}`}>
-                            <img width="25" height="25" alt="" src={user.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
+                          <Link className="nav-link d-flex" to={`/profile`}>
+                            <img width="25" height="25" alt="" src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
                             <span className="ml-1">{`${user.name}`}</span>
                           </Link>
                         </Popover>

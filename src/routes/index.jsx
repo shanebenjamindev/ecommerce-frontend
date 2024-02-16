@@ -15,8 +15,8 @@ const routes = [
                 element: lazy(() => import("../pages/Order/Order")),
             },
             {
-                path: "/account",
-                element: lazy(() => import("../pages/Account/Account")),
+                path: "/profile",
+                element: lazy(() => import("../pages/Profile/Profile")),
             },
         ]
     },

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Modal, Tabs, Form, Input, Button, message } from "antd";
+import { Modal, Tabs, Form, Input, Button } from "antd";
 import { useMutationHook } from "../../hooks/useMutationHook";
 import * as UserService from '../../services/UserService';
 import { jwtDecode } from "jwt-decode";
@@ -65,6 +65,7 @@ export default function PopupAccountComponent(props) {
                 const decoded = jwtDecode(data?.access_token);
                 if (decoded?.id) {
                     handleGetUserDetail(decoded?.id, data?.access_token);
+                    handleModalToggle(false)
                 }
             }
         }
@@ -76,6 +77,7 @@ export default function PopupAccountComponent(props) {
         dispatch(updateUser({ ...res?.data, access_token }))
     }
     const handleLoginFormSubmit = () => {
+        // handleModalToggle(false);
         mutation.mutate(accountLogin);
     };
 

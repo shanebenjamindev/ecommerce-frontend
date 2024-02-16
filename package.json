@@ -24,7 +24,8 @@
     "react-query": "^3.39.3",
     "react-redux": "^9.1.0",
     "react-router-dom": "^6.21.3",
-    "styled-components": "^6.1.8"
+    "styled-components": "^6.1.8",
+    "yarn": "^1.22.21"
   },
   "devDependencies": {
     "@types/react": "^18.2.43",
