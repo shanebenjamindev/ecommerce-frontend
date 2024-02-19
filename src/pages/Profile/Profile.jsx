@@ -1,19 +1,24 @@
 import { useSelector } from "react-redux";
 import { ProfileTable, WrapperProfileUser } from "./style";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import InputForm from "../../components/InputForm/InputForm";
 import { Button, Col, Row } from "antd";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
-
+import { useMutationHook } from "../../hooks/useMutationHook";
+import * as UserService from '../../services/UserService'
 export default function Profile() {
   const user = useSelector(state => state.user);
-  const [userData, setUserData] = useState({
+  const [newUser, setUserData] = useState({
     name: user ? user.name : "",
     email: user ? user.email : "",
     phone: user ? user.phone : "",
     password: "",
     confirmPassword: ""
   });
+
+  const mutation = useMutationHook(data => UserService.userUpdate(data, newUser));
+
+  const { data, isSuccess } = mutation;
 
   const handleOnChange = (e) => {
     const { name, value } = e.target;
@@ -24,52 +29,62 @@ export default function Profile() {
   }
 
   const handleEditProfile = () => {
-    // Handle edit profile action
+    mutation.mutate(user?.id, newUser);
   }
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log(data);
+    }
+  }, [isSuccess])
 
   const renderUserInfo = () => {
     return (
       <WrapperProfileUser>
         <ProfileTable>
-          <table>
-            <tbody> {/* Added tbody for better table structure */}
+          <table >
+            <tbody>
+              <tr>
+              </tr>
               <tr>
                 <th>Name</th>
                 <td>
-                  <InputForm name="name" value={userData.name} onChange={handleOnChange} />
+                  <InputForm name="name" value={newUser.name} onChange={handleOnChange} />
                 </td>
               </tr>
               <tr>
                 <th>Email</th>
                 <td>
-                  <InputForm name="email" value={userData.email} onChange={handleOnChange} />
+                  <InputForm name="email" value={newUser.email} onChange={handleOnChange} />
                 </td>
               </tr>
               <tr>
                 <th>Password</th>
                 <td>
-                  <InputForm type="password" name="password" value={userData.password} onChange={handleOnChange} />
+                  <InputForm type="password" name="password" value={newUser.password} onChange={handleOnChange} />
                 </td>
               </tr>
               <tr>
                 <th>Confirm Password</th>
                 <td>
-                  <InputForm type="password" name="confirmPassword" value={userData.confirmPassword} onChange={handleOnChange} />
+                  <InputForm type="password" name="confirmPassword" value={newUser.confirmPassword} onChange={handleOnChange} />
                 </td>
               </tr>
               <tr>
                 <th>Phone</th>
                 <td>
-                  <InputForm name="phone" value={userData.phone} onChange={handleOnChange} />
+                  <InputForm name="phone" value={newUser.phone} onChange={handleOnChange} />
                 </td>
               </tr>
             </tbody>
+            {mutation && mutation?.data && <span>{mutation?.data.message}</span>}
+
+            <Row justify="end" style={{ marginTop: "16px" }}>
+              <ButtonComponent onClick={handleEditProfile} type="button" variant="primary" text="Edit Profile" />
+            </Row>
           </table>
         </ProfileTable>
 
-        <Row justify="end" style={{ marginTop: "16px" }}>
-          <ButtonComponent variant="primary" onClick={handleEditProfile} text="Edit Profile" />
-        </Row>
       </WrapperProfileUser >
     );
   };
