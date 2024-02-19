@@ -6,6 +6,9 @@ const InputForm = ({ value, onChange, name, type }) => {
     if (type === "password") {
       return "password"
     }
+    if (type === "file") {
+      return "file"
+    }
     else "text"
   }
   const handleChange = (e) => {

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
 import logo from '/images/logo.png';
 import { Col, Row, Popover } from "antd";
@@ -38,13 +38,14 @@ export default function HeaderComponent() {
   }
 
   const [loading, setLoading] = useState(false)
-
+  const navigate = useNavigate();
   const handleLogout = async () => {
     setLoading(true)
     await UserService.userLogout();
     localStorage.removeItem("access_token")
     localStorage.removeItem("refresh_token")
     dispatch(resetUser())
+    navigate('/')
     setLoading(false)
   }
 

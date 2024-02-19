@@ -17,6 +17,7 @@ export const userSlice = createSlice({
             state.access_token = access_token;
         },
         resetUser: (state) => {
+            state.id = "";
             state.name = "";
             state.email = "";
             state.phone = "";

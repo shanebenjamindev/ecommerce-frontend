@@ -8,6 +8,9 @@ import { useMutationHook } from "../../hooks/useMutationHook";
 import * as UserService from '../../services/UserService'
 export default function Profile() {
   const user = useSelector(state => state.user);
+  const [userAvatar, setAvatar] = useState("");
+  const [avatarPreview, setavatarPreview] = useState("");
+
   const [newUser, setUserData] = useState({
     name: user ? user.name : "",
     email: user ? user.email : "",
@@ -29,12 +32,20 @@ export default function Profile() {
   }
 
   const handleEditProfile = () => {
+    if (!newUser.name || !newUser.email || !newUser.password || !newUser.confirmPassword || !newUser.phone) {
+      alert("Please fill in all required fields.");
+      return;
+    }
+
     mutation.mutate(user?.id, newUser);
   }
 
   useEffect(() => {
     if (isSuccess) {
-      console.log(data);
+      const timeoutId = setTimeout(() => {
+        window.location.reload();
+      }, 2000);
+      return () => clearTimeout(timeoutId);
     }
   }, [isSuccess])
 
@@ -84,7 +95,6 @@ export default function Profile() {
             </Row>
           </table>
         </ProfileTable>
-
       </WrapperProfileUser >
     );
   };
@@ -95,7 +105,13 @@ export default function Profile() {
         <Row justify="center">
           <Col span={12}>
             <Row justify="center">
-              <img width="50%" alt="" src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
+              <img src={userAvatar} />
+              <InputForm type={"file"} accept="/image/*" onChange={(e) => {
+                const file = e.target.files[0];
+                if (file && file.type.subString(0, 5) === "image") {
+                  setAvatar(file)
+                }
+              }} />
             </Row>
           </Col>
 
@@ -109,3 +125,4 @@ export default function Profile() {
     </div>
   );
 }
+// <img width="50%" alt="" src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
