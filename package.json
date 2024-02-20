@@ -41,5 +41,5 @@
     "eslint-plugin-react-refresh": "^0.4.5",
     "vite": "^5.0.8"
   },
-  "proxy": "https://backend-commerce-ptlm.onrender.com"
+  "proxy": "https://ecommerce-backend-8xe6.onrender.com"
 }
