@@ -8,11 +8,15 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { Provider } from 'react-redux';
 import { store } from './store/store.js'
+import { Analytics } from '@vercel/analytics/react';
 const queryClient = new QueryClient();
+
+
 ReactDOM.createRoot(document.getElementById('root')).render(
   <QueryClientProvider client={queryClient}>
     <Provider store={store}>
       <App />
+      <Analytics />
     </Provider>
     <ReactQueryDevtools initialIsOpen={false} />
   </QueryClientProvider>
