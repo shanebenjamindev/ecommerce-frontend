@@ -6,7 +6,7 @@ import CategoryComponent from "../CategoryComponent/CategoryComponent";
 
 export default function MainComponent() {
     return (
-        <WrapperMain className="w-75 m-auto">
+        <WrapperMain style={{ width: "1440px", margin: "auto" }}>
             <Breadcrumb />
             <Row gutter={[16, 16]}>
                 <Col span={4}>

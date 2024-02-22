@@ -92,7 +92,7 @@ export default function PopupAccountComponent(props) {
                 wrapperCol={{ span: 19 }}
                 label="Email"
             >
-                <Input name="email" onChange={(e) => { handleOnchange(e, 'signin') }} placeholder="Enter your email" />
+                <Input autoFocus name="email" onChange={(e) => { handleOnchange(e, 'signin') }} placeholder="Enter your email" />
             </Form.Item>
             <Form.Item
                 labelCol={{ span: 5 }}

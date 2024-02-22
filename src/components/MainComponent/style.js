@@ -6,5 +6,5 @@ export const WrapperMain = styled.div`
 
 export const WrapperOutlet = styled.div`
     background-color: var(--white-color);
-    padding: 16px;
+    padding: 24px;
 `

@@ -70,9 +70,9 @@ export default function HeaderComponent() {
 
   return (
     <div className="w-100 fixed-top bg-white">
-      <nav className="w-75 m-auto admin__Navbar navbar navbar-expand-lg navbar-light justify-content-between">
+      <Row className="m-auto admin__Navbar navbar navbar-expand-lg navbar-light justify-content-between">
 
-        <Col md={2}>
+        <Col md={4} sm={2}>
           <Link className="navbar-brand d-flex justify-content-center align-items-center" to="/">
             <img
               width="75px"
@@ -82,19 +82,17 @@ export default function HeaderComponent() {
           </Link>
         </Col>
 
-        <button
-          className="navbar-toggler"
-          type="button"
-          data-toggle="collapse"
-          data-target="#navbarSupportedContentAdmin"
-          aria-controls="navbarSupportedContentAdmin"
-          aria-expanded="false"
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
+        <Col md={20} sm={10}>
+          <Col sm={3}
+            className="overlay-hidden"
+            data-toggle="collapse"
+            data-target="#navbarSupportedContentAdmin"
+            aria-controls="navbarSupportedContentAdmin"
+            aria-expanded="false"
+            aria-label="Toggle navigation"
+          ></Col>
 
-        <Col md={22}>
+
           <Row>
             <Col md={18}>
               <WrapperSearch
@@ -104,21 +102,13 @@ export default function HeaderComponent() {
               />
             </Col>
 
-            <Col md={6}>
+            <Col md={6} >
               <div
                 className="collapse navbar-collapse text-center"
                 id="navbarSupportedContentAdmin"
               >
-                <div
-                  className="overlay-hidden"
-                  data-toggle="collapse"
-                  data-target="#navbarSupportedContentAdmin"
-                  aria-controls="navbarSupportedContentAdmin"
-                  aria-expanded="false"
-                  aria-label="Toggle navigation"
-                ></div>
 
-                <ul className="navbar-nav ml-auto main__p">
+                <ul className="navbar-nav w-100 d-flex justify-content-center">
                   <li className="nav-item">
                     <Link to="/">
                       <ButtonComponent variant="button-primary" text={<>
@@ -132,7 +122,6 @@ export default function HeaderComponent() {
                         <Popover placement="bottom" content={contentDropdown}>
                           <Link className="nav-link d-flex" to={`/profile`}>
                             <img width="25" height="25" alt="" src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
-                            <span className="ml-1">{`${user.name}`}</span>
                           </Link>
                         </Popover>
                       </li>
@@ -149,7 +138,23 @@ export default function HeaderComponent() {
                 </ul>
               </div>
             </Col>
+
+
+            <Col sm={12} >
+              <button
+                className="navbar-toggler"
+                type="button"
+                data-toggle="collapse"
+                data-target="#navbarSupportedContentAdmin"
+                aria-controls="navbarSupportedContentAdmin"
+                aria-expanded="false"
+                aria-label="Toggle navigation"
+              >
+                <span className="navbar-toggler-icon"></span>
+              </button>
+            </Col>
           </Row>
+
           <Row className="mt-2" justify={"space-between"}>
             <div>
               điện gia dụng
@@ -166,7 +171,7 @@ export default function HeaderComponent() {
             </div>
           </Row>
         </Col>
-      </nav >
+      </Row >
       <PopupAccountComponent isVisible={isModalVisible} handleModalToggle={handleCancel} />
     </div >
   );
