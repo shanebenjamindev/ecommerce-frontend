@@ -1,5 +1,6 @@
-import { lazy, useState } from 'react';
+import { useState } from 'react';
 import {
+    LogoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
     UploadOutlined,
@@ -9,6 +10,10 @@ import {
 import { Layout, Menu, Button, theme } from 'antd';
 import UserManagement from './UserManagement/UserManagement';
 import ProductManagement from './ProductManagement/ProductManagement';
+import * as UserService from '../../services/UserService';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { resetUser } from '../../redux/slides/userSlide';
 
 
 const { Header, Sider, Content } = Layout;
@@ -25,13 +30,26 @@ export default function Dashboard() {
         setMenuSelect(e.key)
     }
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const handleLogout = async () => {
+        await UserService.userLogout();
+        localStorage.removeItem("access_token")
+        localStorage.removeItem("refresh_token")
+        dispatch(resetUser())
+        navigate('/')
+    }
+
     const renderPage = (key) => {
         switch (key) {
             case "user-management":
                 return <UserManagement />
             case "product-management":
                 return <ProductManagement />
-
+            case 'logout':
+                handleLogout();
+                break;
             default:
                 return <></>
         }
@@ -62,6 +80,11 @@ export default function Dashboard() {
                             icon: <UploadOutlined />,
                             label: 'Product',
                         },
+                        {
+                            key: 'logout',
+                            icon: <LogoutOutlined />,
+                            label: 'Log Out',
+                        }
                     ]}
                 />
             </Sider>
