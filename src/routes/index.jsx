@@ -20,6 +20,20 @@ const routes = [
             },
         ]
     },
+    {
+        path: "/admin",
+        element: lazy(() => import("../pages/Admin/Dashboard")),
+        nested: [
+            {
+                path: "/admin/dashboard",
+                element: lazy(() => import("../pages/Admin/Dashboard"))
+            },
+            {
+                path: "/admin/user-manager",
+                element: lazy(() => import("../pages/Admin/UserManagement/UserManagement"))
+            }
+        ]
+    }
 ]
 
 const renderRoutes = () => {

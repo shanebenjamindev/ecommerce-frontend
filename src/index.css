@@ -5,7 +5,31 @@
   --hover-bg-secondary: #e4e4e5;
   --fade-color: #bcbcc1;
   --white-color: white;
+  --border-product: 4px;
 }
+
+.custom-card {
+  position: relative;
+}
+
+.custom-overlay {
+  background: linear-gradient(
+    to top,
+    var(--primary-color),
+    var(--hover-bg-color)
+  );
+  opacity: 0;
+  transition: all 0.5s ease;
+  height: 100%;
+  position: absolute;
+  width: 100%;
+  left: 0;
+}
+
+.custom-card:hover .custom-overlay {
+  opacity: 1;
+}
+
 *,
 *:before,
 *:after {

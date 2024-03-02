@@ -57,6 +57,12 @@ export default function HeaderComponent() {
       <Row justify={"center"}>
         <button width={"100%"} onClick={handleLogout}>Log Out</button>
       </Row>
+      {(user?.isAdmin) && (
+        <Row>
+          <Link to="/admin/dashboard">Trang Quản trị</Link>
+        </Row>
+      )}
+
     </Col>
   );
 
