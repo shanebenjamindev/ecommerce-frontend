@@ -7,8 +7,8 @@ export const productSlide = createSlice({
     initialState,
     reducers: {
         getProduct: (state, action) => {
+            console.log("a");
             const { _id, name, image, type, price, countInStock, rating, description, discount, selled } = action.payload;
-            console.log(action.payload);
             state.id = _id;
             state.name = name;
             state.image = image;

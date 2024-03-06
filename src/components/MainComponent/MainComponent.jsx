@@ -1,7 +1,7 @@
 import { Outlet } from "react-router-dom";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { Col, Row } from "antd";
-import { WrapperMain, WrapperOutlet } from "./style";
+import { WrapperMain, WrapperOutlet, ContainerMain } from "./style";
 import CategoryComponent from "../CategoryComponent/CategoryComponent";
 
 export default function MainComponent() {

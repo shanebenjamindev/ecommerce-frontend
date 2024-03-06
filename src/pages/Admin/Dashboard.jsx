@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import {
+    HomeOutlined,
     LogoutOutlined,
     MenuFoldOutlined,
     MenuUnfoldOutlined,
@@ -43,6 +44,8 @@ export default function Dashboard() {
 
     const renderPage = (key) => {
         switch (key) {
+            case "home":
+                navigate('/')
             case "user-management":
                 return <UserManagement />
             case "product-management":
@@ -69,6 +72,11 @@ export default function Dashboard() {
                             key: 'dashboard',
                             icon: <UserOutlined />,
                             label: 'Dashboard',
+                        },
+                        {
+                            key: 'home',
+                            icon: <HomeOutlined />,
+                            label: 'HomePage'
                         },
                         {
                             key: 'user-management',

@@ -28,3 +28,12 @@ export const userUpdate = async (id, newData) => {
     const res = await axios.put(`${VITE_SOME_KEY}/user/update/${id}`, newData)
     return res.data;
 };
+
+export const getAllUser = async (access_token) => {
+    const res = await axios.get(`${VITE_SOME_KEY}/user/getAll`, {
+        headers: {
+            token: `Beare ${access_token}`,
+        }
+    });
+    return res.data;
+};
