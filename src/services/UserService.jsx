@@ -37,3 +37,11 @@ export const getAllUser = async (access_token) => {
     });
     return res.data;
 };
+export const deleteUser = async (id, access_token) => {
+    const res = await axios.delete(`${VITE_SOME_KEY}/user/delete-user/${id}`, {
+        headers: {
+            token: `Beare ${access_token}`,
+        }
+    });
+    return res
+};

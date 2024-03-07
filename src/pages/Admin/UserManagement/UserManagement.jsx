@@ -1,17 +1,24 @@
-import { Space, Table, Tag } from 'antd';
-import { useEffect } from 'react';
+import { Space, Table, Tag, message } from 'antd';
+import { useEffect, useState } from 'react';
 import * as UserServices from '../../../services/UserService';
 import { useSelector } from 'react-redux';
 import { useQuery } from 'react-query';
 
+const rowSelection = {
+  onChange: (selectedRowKeys, selectedRows) => {
+    console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+  },
+  getCheckboxProps: (record) => ({
+    disabled: record.name === 'Disabled User',
+    // Column configuration not to be checked
+    name: record.name,
+  }),
+};
+
 export default function UserManagement() {
   const user = useSelector(state => state.user);
-
+  const [selectionType, setSelectionType] = useState('checkbox');
   const { data: users, isLoading, isError } = useQuery(['user'], () => getAllUser(user.access_token));
-
-  useEffect(() => {
-    getAllUser();
-  }, []);
 
   const getAllUser = async () => {
     try {
@@ -22,31 +29,46 @@ export default function UserManagement() {
     }
   }
 
+  const deleteUser = async (value) => {
+    const res = await UserServices.deleteUser(value, user.access_token)
+    const { message } = res.data
+    console.log(message);
+  }
+
   const columns = [
     {
       title: 'Name',
       dataIndex: 'name',
-      key: 'name', // Unique key for this column
+      key: 'name',
     },
     {
       title: 'Email',
       dataIndex: 'email',
-      key: 'email', // Unique key for this column
+      key: 'email',
     },
     {
       title: 'Phone',
       dataIndex: 'phone',
-      key: 'phone', // Unique key for this column
+      key: 'phone',
     },
+    {
+      title: 'Action',
+      render: (user) => (
+        <div className='d-md-flex' style={{ gap: "5px ", justifyContent: "center" }}>
+          <button type='button' className='btn btn-primary'>Edit</button>
+          <button type='button' className='btn btn-danger' onClick={() => deleteUser(user._id)}>Delete</button>
+        </div>
+      )
+    }
   ];
 
-  const usersWithKeys = users?.map((user, index) => {
-    console.log(users);
-  });
 
   return (
     <div>
-      <Table dataSource={users} columns={columns} loading={isLoading}/>
+      <Table rowSelection={{
+        type: selectionType,
+        ...rowSelection,
+      }} dataSource={users} columns={columns} loading={isLoading} rowKey={"_id"} />
     </div>
   )
 }
