@@ -1,25 +1,29 @@
 import { Link, useNavigate } from "react-router-dom";
 import ButtonComponent from "../ButtonComponent/ButtonComponent";
-import logo from '/images/logo.png';
+import logo from "/images/logo.png";
 import { Col, Row, Popover } from "antd";
-import { HomeOutlined, SearchOutlined, ShoppingCartOutlined, SmileOutlined } from '@ant-design/icons';
+import {
+  HomeOutlined,
+  SearchOutlined,
+  ShoppingCartOutlined,
+  SmileOutlined,
+} from "@ant-design/icons";
 import { SearchButton, WrapperSearch } from "./style";
 import { useEffect, useState } from "react";
-import * as UserService from '../../services/UserService';
+import * as UserService from "../../services/UserService";
 import { useDispatch, useSelector } from "react-redux";
 import { resetUser, updateUser } from "../../redux/slides/userSlide";
 import PopupAccountComponent from "../PopupAccountComponent/PopupAccountComponent";
 import Loading from "../LoadingComponent/LoadingComponent";
 import { jwtDecode } from "jwt-decode";
 
-
 export default function HeaderComponent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const user = useSelector(state => state.user) || null;
+  const user = useSelector((state) => state.user) || null;
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const access_token = localStorage?.getItem('access_token');
+    const access_token = localStorage?.getItem("access_token");
     if (access_token) {
       const decoded = jwtDecode(access_token);
       if (decoded?.id) {
@@ -35,34 +39,33 @@ export default function HeaderComponent() {
     } catch (error) {
       console.error("Error fetching user details");
     }
-  }
+  };
 
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const handleLogout = async () => {
-    setLoading(true)
+    setLoading(true);
     await UserService.userLogout();
-    localStorage.removeItem("access_token")
-    localStorage.removeItem("refresh_token")
-    dispatch(resetUser())
-    navigate('/')
-    setLoading(false)
-  }
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    dispatch(resetUser());
+    navigate("/");
+    setLoading(false);
+  };
 
   const contentDropdown = (
     <Col>
-      <Link to={`/profile`}>
-        Trang cá nhân
-      </Link>
+      <Link to={`/profile`}>Trang cá nhân</Link>
       <Row justify={"center"}>
-        <button width={"100%"} onClick={handleLogout}>Log Out</button>
+        <button width={"100%"} onClick={handleLogout}>
+          Log Out
+        </button>
       </Row>
-      {(user?.isAdmin) && (
+      {user?.isAdmin && (
         <Row>
           <Link to="/admin/dashboard">Trang Quản trị</Link>
         </Row>
       )}
-
     </Col>
   );
 
@@ -77,19 +80,18 @@ export default function HeaderComponent() {
   return (
     <div className="w-100 fixed-top bg-white">
       <Row className="m-auto admin__Navbar navbar navbar-expand-lg navbar-light justify-content-between">
-
         <Col md={4} sm={2}>
-          <Link className="navbar-brand d-flex justify-content-center align-items-center" to="/">
-            <img
-              width="75px"
-              src={logo}
-              alt=""
-            />
+          <Link
+            className="navbar-brand d-flex justify-content-center align-items-center"
+            to="/"
+          >
+            <img width="75px" src={logo} alt="" />
           </Link>
         </Col>
 
         <Col md={20} sm={10}>
-          <Col sm={3}
+          <Col
+            sm={3}
             className="overlay-hidden"
             data-toggle="collapse"
             data-target="#navbarSupportedContentAdmin"
@@ -98,55 +100,79 @@ export default function HeaderComponent() {
             aria-label="Toggle navigation"
           ></Col>
 
-
           <Row>
             <Col md={18}>
               <WrapperSearch
-                type='text'
+                type="text"
                 placeholder="Nhập tên sản phẩm để tìm kiếm"
-                suffix={<SearchButton icon={<SearchOutlined />} >Search</SearchButton>}
+                suffix={
+                  <SearchButton icon={<SearchOutlined />}>Search</SearchButton>
+                }
               />
             </Col>
 
-            <Col md={6} >
+            <Col md={6}>
               <div
                 className="collapse navbar-collapse text-center"
                 id="navbarSupportedContentAdmin"
               >
-
                 <ul className="navbar-nav w-100 d-flex justify-content-center">
                   <li className="nav-item">
                     <Link to="/">
-                      <ButtonComponent variant="button-primary" text={<>
-                        <HomeOutlined /> Trang chủ
-                      </>} />
+                      <ButtonComponent
+                        variant="button-primary"
+                        text={
+                          <>
+                            <HomeOutlined /> Trang chủ
+                          </>
+                        }
+                      />
                     </Link>
                   </li>
-                  <Loading isLoading={loading} >
-                    {user?.name ?
+                  <Loading isLoading={loading}>
+                    {user?.name ? (
                       <li className="nav-item">
                         <Popover placement="bottom" content={contentDropdown}>
                           <Link className="nav-link d-flex" to={`/profile`}>
-                            <img width="25" height="25" alt="" src={user?.avatar || "https://cdn-icons-png.flaticon.com/512/149/149071.png"} />
+                            <img
+                              width="25"
+                              height="25"
+                              alt=""
+                              src={
+                                user?.avatar ||
+                                "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                              }
+                            />
                           </Link>
                         </Popover>
                       </li>
-                      :
+                    ) : (
                       <li onClick={showModal}>
-                        <ButtonComponent className="nav-link" variant="button-secondary" text={<><SmileOutlined /> Tài khoản</>} />
+                        <ButtonComponent
+                          className="nav-link"
+                          variant="button-secondary"
+                          text={
+                            <>
+                              <SmileOutlined /> Tài khoản
+                            </>
+                          }
+                        />
                       </li>
-                    }
+                    )}
                   </Loading>
 
                   <li className="nav-item">
-                    <ButtonComponent className="nav-link" variant="button-primary" text={<ShoppingCartOutlined />} />
+                    <ButtonComponent
+                      className="nav-link"
+                      variant="button-primary"
+                      text={<ShoppingCartOutlined />}
+                    />
                   </li>
                 </ul>
               </div>
             </Col>
 
-
-            <Col sm={12} >
+            <Col sm={12}>
               <button
                 className="navbar-toggler"
                 type="button"
@@ -163,22 +189,18 @@ export default function HeaderComponent() {
 
           <Row className="mt-2" justify={"space-between"}>
             <div>
-              điện gia dụng
-              xe cộ
-              mẹ & bé
-              khỏe đẹp
-              nhà cửa
-              sách
-              thể thao
+              điện gia dụng xe cộ mẹ & bé khỏe đẹp nhà cửa sách thể thao
             </div>
 
-            <div>
-              Giao đến: Q. 1, P. Bến Nghé, Hồ Chí Minh
-            </div>
+            <div>Giao đến: Q. 1, P. Bến Nghé, Hồ Chí Minh</div>
           </Row>
         </Col>
-      </Row >
-      <PopupAccountComponent isVisible={isModalVisible} handleModalToggle={handleCancel} />
-    </div >
+      </Row>
+      <PopupAccountComponent
+        variant="account"
+        isVisible={isModalVisible}
+        handleModalToggle={handleCancel}
+      />
+    </div>
   );
 }
