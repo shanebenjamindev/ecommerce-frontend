@@ -6,12 +6,14 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { updateUser } from "../../redux/slides/userSlide";
+import { userHook } from "../../hooks/userHook";
 
 const { TabPane } = Tabs;
 
 export default function PopupAccountComponent(props) {
   const { variant, selectedUser, isVisible, handleModalToggle } = props;
 
+  const adminUser = userHook();
   const [form] = Form.useForm();
   const [activeTab, setActiveTab] = useState();
   const [accountSignup, setNewAccount] = useState({
@@ -78,6 +80,7 @@ export default function PopupAccountComponent(props) {
     const res = await UserService.getDetailsUser(id, access_token);
     dispatch(updateUser({ ...res?.data, access_token }));
   };
+
   const handleLoginFormSubmit = () => {
     mutation.mutate(accountLogin);
   };
@@ -197,7 +200,7 @@ export default function PopupAccountComponent(props) {
     </Form>
   );
 
-  const renderEditForm = (selectedUser) => {
+  const renderEditForm = () => {
     return (
       <Form>
         <Form.Item
@@ -303,35 +306,35 @@ export default function PopupAccountComponent(props) {
           </Modal>
         );
 
-      case "adminEdit":
+      case "Edit Form":
         return (
           <Modal
-            title="User Information"
+            title={variant}
             visible={isVisible}
             onOk={handleOk}
             onCancel={handleCancel}
             footer={null}
           >
             <Tabs activeKey={activeTab} onChange={handleTabChange}>
-              <TabPane tab="Edit" key="edit">
-                {selectedUser ? renderEditForm(selectedUser) : <> a </>}
+              <TabPane tab={variant} key="edit">
+                {renderEditForm()}
               </TabPane>
             </Tabs>
           </Modal>
         );
 
-      case "adminAdd":
+      case "Add Form":
         return (
           <Modal
-            title="User Information"
+            title={variant}
             visible={isVisible}
             onOk={handleOk}
             onCancel={handleCancel}
             footer={null}
           >
             <Tabs activeKey={activeTab} onChange={handleTabChange}>
-              <TabPane tab="Add" key="add">
-                Add User
+              <TabPane tab={variant} key="add">
+                {renderSignupForm()}
               </TabPane>
             </Tabs>
           </Modal>
