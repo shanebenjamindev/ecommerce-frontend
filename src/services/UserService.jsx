@@ -8,6 +8,7 @@ export const userSignin = async (data) => {
 
 export const userSignup = async (data) => {
   const res = await axios.post(`${VITE_SOME_KEY}/user/sign-up`, data);
+  console.log(res);
   return res.data;
 };
 

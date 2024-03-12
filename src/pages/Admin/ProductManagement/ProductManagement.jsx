@@ -1,12 +1,24 @@
 import { useQuery } from "react-query";
-import { Space, Table, Tag, message } from "antd";
+import { Space, Table, Tag, message, Button } from "antd";
 import * as ProductService from "../../../services/ProductService";
 import PopupAccountComponent from "../../../components/PopupAccountComponent/PopupAccountComponent";
 import ButtonComponent from "../../../components/ButtonComponent/ButtonComponent";
 import { useState } from "react";
+import { PlusCircleOutlined } from "@ant-design/icons";
+import { userHook } from "../../../hooks/userHook";
 
+const rowSelection = {
+  getCheckboxProps: (record) => ({
+    disabled: record.name === "Disabled User",
+    name: record.name,
+  }),
+};
 export default function ProductManagement() {
-  const [modal, setIsModalVisible] = useState(false);
+  const [selectedUser, setSelectedUser] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalVariant, setModalVariant] = useState("");
+
+  const adminUser = userHook();
 
   const {
     data: products,
@@ -15,15 +27,26 @@ export default function ProductManagement() {
   } = useQuery(["product"], () => getAllProduct());
 
   const showModal = (e) => {
-    setIsModalVisible(true);
+    setModalVisible(true);
   };
 
   const handleCancel = () => {
-    setIsModalVisible(false);
+    setModalVisible(false);
   };
   const getAllProduct = async () => {
     const res = await ProductService.GetAllProduct();
     return res.data;
+  };
+
+  const handleDeleteProduct = async (userId) => {
+    try {
+      const res = await ProductService.DeleteProduct(userId, adminUser.access_token);
+      message.success(res.data.message);
+      getAllProduct();
+    } catch (error) {
+      console.log(error);
+      message.error("Failed to delete user.");
+    }
   };
 
   const renderProduct = () => {};
@@ -52,37 +75,40 @@ export default function ProductManagement() {
     {
       title: "Action",
       render: (product) => (
-        <div
-          className="d-md-flex"
-          style={{ gap: "5px ", justifyContent: "center" }}
-        >
-          <button
-            type="button"
-            value={product._id}
-            className="btn btn-primary"
-            onClick={showModal}
+        <Space size="middle">
+          <Button
+            type="primary"
+            onClick={() => showModal("Edit Form", product._id)}
           >
             Edit
-          </button>
-          <button
-            type="button"
-            className="btn btn-danger"
-            // onClick={() => deleteproduct(product._id)}
-          >
+          </Button>
+          <Button type="danger" onClick={() => handleDeleteProduct(product._id, adminUser.access_token)}>
             Delete
-          </button>
-        </div>
+          </Button>
+        </Space>
       ),
     },
   ];
 
   return (
     <div>
+      <PopupAccountComponent
+        isVisible={modalVisible}
+        variant={modalVariant}
+        selectedUser={selectedUser}
+        handleModalToggle={handleCancel}
+      />
+      <Button type="primary" onClick={() => showModal("Add Form")}>
+        <PlusCircleOutlined /> Add User
+      </Button>
       <Table
+        rowSelection={{
+          type: "checkbox",
+          ...rowSelection,
+        }}
         dataSource={products}
         columns={columns}
-        loading={isLoading}
-        rowKey={"_id"}
+        rowKey="_id"
       />
     </div>
   );

@@ -48,14 +48,21 @@ export default function UserManagement() {
     setModalVisible(false);
   };
 
-  const deleteUser = async (userId) => {
-    try {
-      const res = await UserServices.deleteUser(userId, adminUser.access_token);
-      message.success(res.data.message);
-      getAllUsers();
-    } catch (error) {
-      console.log(error);
-      message.error("Failed to delete user.");
+  const handleDeleteUser = async (userId) => {
+    if (userId !== adminUser.id) {
+      try {
+        const res = await UserServices.deleteUser(
+          userId,
+          adminUser.access_token
+        );
+        message.success(res.data.message);
+        getAllUsers();
+      } catch (error) {
+        console.log(error);
+        message.error("Failed to delete user.");
+      }
+    } else {
+      message.error("Failed to delete current logged user.");
     }
   };
 
@@ -85,7 +92,7 @@ export default function UserManagement() {
           >
             Edit
           </Button>
-          <Button type="danger" onClick={() => deleteUser(user._id)}>
+          <Button type="danger" onClick={() => handleDeleteUser(user._id)}>
             Delete
           </Button>
         </Space>
