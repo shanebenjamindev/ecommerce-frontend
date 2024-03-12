@@ -1,32 +1,34 @@
 import { Row } from "react-bootstrap";
-import ProductComponent from "../../../components/ProductComponent/ProductComponent";
 import { WrapperListProduct } from "./style";
-import * as ProductService from '../../../services/ProductService'
+import * as ProductService from "../../../services/ProductService";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import { getProduct } from "../../../redux/slides/productSlide";
+import { useQuery } from "react-query";
+import ItemComponent from "../../../components/ItemComponent/ItemComponent";
 
 export default function ListProduct() {
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
 
-    const getAllProduct = async () => {
-        const res = await ProductService.GetAllProduct();
-        dispatch(getProduct({ ...res?.data }));
-    }
+  const {
+    data: listProduct,
+    isLoading,
+    isError,
+  } = useQuery(["product"], () => getAllProduct());
 
-    useEffect(() => {
-    }, [])
+  const getAllProduct = async () => {
+    const res = await ProductService.GetAllProduct();
+    return res.data;
+  };
 
-    const renderProduct = () => {
-        // return listProduct.map((product, index) => {
-        //     return <>
-        //         <ProductComponent item={product} key={index} />
-        //     </>
-        // })
-    }
-    return (
-        <WrapperListProduct className="row justify-content-center">
-            {renderProduct()}
-        </WrapperListProduct>
-    )
+  const renderProduct = () => {
+    return listProduct?.map((product, index) => {
+      return <ItemComponent key={index} product={product} />;
+    });
+  };
+  return (
+    <WrapperListProduct className="row justify-content-center">
+      {renderProduct()}
+    </WrapperListProduct>
+  );
 }

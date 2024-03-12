@@ -1,5 +1,6 @@
 :root {
   --primary-color: #0064ff;
+  --secondary-color: #31A4FF;
   --bg-fade-color: #f5f5fa;
   --hover-bg-color: #e2edff;
   --hover-bg-secondary: #e4e4e5;
@@ -13,11 +14,9 @@
 }
 
 .custom-overlay {
-  background: linear-gradient(
-    to top,
-    var(--primary-color),
-    var(--hover-bg-color)
-  );
+  background: linear-gradient(to top,
+      var(--primary-color),
+      var(--hover-bg-color));
   opacity: 0;
   transition: all 0.5s ease;
   height: 100%;
@@ -35,11 +34,13 @@
 *:after {
   box-sizing: border-box;
 }
+
 * {
   margin: 0;
   padding: 0;
   font: inherit;
 }
+
 img,
 picture,
 svg,
@@ -47,24 +48,28 @@ video {
   display: block;
   max-width: 100%;
 }
+
 input,
 select,
 textarea {
   background-color: transparent;
   outline: none;
 }
+
 button {
   cursor: pointer;
   background-color: transparent;
   outline: none;
   border: 0;
 }
+
 body {
   min-height: 100vh;
   font-weight: 400;
   font-size: 16px;
   line-height: 1;
 }
+
 a,
 link,
 Link,

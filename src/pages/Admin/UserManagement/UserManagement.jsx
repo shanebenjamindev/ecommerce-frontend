@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "react-query";
 import PopupAccountComponent from "../../../components/PopupAccountComponent/PopupAccountComponent";
 import ButtonComponent from "../../../components/ButtonComponent/ButtonComponent";
+import { PlusCircleOutlined } from "@ant-design/icons";
 
 const rowSelection = {
   getCheckboxProps: (record) => ({
@@ -17,8 +18,7 @@ export default function UserManagement() {
   const adminUser = useSelector((state) => state.user);
   const [selectedUser, setSelectedUser] = useState("");
   const [modal, setIsModalVisible] = useState(false);
-
-  const [modalVariant, setModalVariant] = useState();
+  const [modalVariant, setModalVariant] = useState("");
 
   const [selectionType, setSelectionType] = useState("checkbox");
   const {
@@ -29,7 +29,7 @@ export default function UserManagement() {
 
   const showModal = (e) => {
     setIsModalVisible(true);
-    const id = e.target.value;
+    const id = e?.target.value;
     id ? getUserDetail(id, adminUser.access_token) : null;
   };
 
@@ -88,7 +88,9 @@ export default function UserManagement() {
             type="button"
             value={user._id}
             className="btn btn-primary"
-            onClick={showModal}
+            onClick={() => {
+              setModalVariant("adminEdit") | showModal();
+            }}
           >
             Edit
           </button>
@@ -112,11 +114,13 @@ export default function UserManagement() {
         selectedUser={selectedUser}
         handleModalToggle={handleCancel}
       />
-      <ButtonComponent
-        onClick={() => setModalVariant("adminAdd") && showModal}
-        variant="primary"
-        text="Add"
-      />
+      <button
+        onClick={() => {
+          setModalVariant("adminAdd") | showModal();
+        }}
+      >
+        <PlusCircleOutlined /> Add User
+      </button>
       <Table
         rowSelection={{
           type: selectionType,

@@ -16,10 +16,11 @@ import { resetUser, updateUser } from "../../redux/slides/userSlide";
 import PopupAccountComponent from "../PopupAccountComponent/PopupAccountComponent";
 import Loading from "../LoadingComponent/LoadingComponent";
 import { jwtDecode } from "jwt-decode";
+import { userHook } from "../../hooks/userHook";
 
 export default function HeaderComponent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const user = useSelector((state) => state.user) || null;
+  const user = userHook();
   const dispatch = useDispatch();
 
   useEffect(() => {
