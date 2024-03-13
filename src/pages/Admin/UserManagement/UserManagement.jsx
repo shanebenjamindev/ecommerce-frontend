@@ -94,7 +94,7 @@ export default function UserManagement() {
           >
             Edit
           </Button>
-          <Button type="danger" onClick={() => handleDeleteUser(user._id)}>
+          <Button type="primary" danger onClick={() => handleDeleteUser(user._id)}>
             Delete
           </Button>
         </Space>

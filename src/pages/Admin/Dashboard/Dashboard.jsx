@@ -1,15 +1,10 @@
 import React, { useState } from "react";
 import { Col, Row } from "antd";
-import { Doughnut } from "react-chartjs-2";
 import { useQuery } from "react-query";
 import { userHook } from "../../../hooks/userHook";
-import ButtonComponent from "../../../components/ButtonComponent/ButtonComponent";
 import { DashboardOrderButton } from "./style";
 import * as ProductService from "../../../services/ProductService";
-
-import { Bar } from "react-chartjs-2";
 import VerticalItemsComponent from "../../../components/VerticalItemsComponent";
-import ProductManagement from "../ProductManagement/ProductManagement";
 import UserManagement from "../UserManagement/UserManagement";
 
 export default function Dashboard() {

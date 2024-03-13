@@ -26,9 +26,5 @@ export default function ListProduct() {
       return <ItemComponent key={index} product={product} />;
     });
   };
-  return (
-    <WrapperListProduct className="row justify-content-center">
-      {renderProduct()}
-    </WrapperListProduct>
-  );
+  return <Row className="justify-content-center">{renderProduct()}</Row>;
 }

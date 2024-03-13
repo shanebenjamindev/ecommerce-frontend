@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button, Modal, Form, Upload } from "antd";
 import InputComponent from "../InputComponent/InputComponent";
 import { PlusCircleOutlined, UploadOutlined } from "@ant-design/icons";
 import { getBase64 } from "../../utils";
 import * as ProductService from "../../services/ProductService";
 import { useMutationHook } from "../../hooks/useMutationHook";
+import { error } from "jquery";
 
 const PopupComponent = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -32,6 +33,16 @@ const PopupComponent = () => {
     });
   };
 
+  const handleGetAllProduct = async () => {
+    try {
+      const res = await ProductService.GetAllProduct();
+      return res.data;
+    } catch (e) {
+      console.log(e.error);
+    }
+  };
+  const resz = handleGetAllProduct();
+  console.log(resz);
   const handleOnChangeAvatar = async ({ fileList }) => {
     const file = fileList[0];
     console.log(file);
@@ -46,6 +57,7 @@ const PopupComponent = () => {
   const onFinish = () => {
     if (stateProduct) {
       mutation.mutate(stateProduct);
+      handleGetAllProduct();
     }
   };
 
@@ -62,7 +74,7 @@ const PopupComponent = () => {
   return (
     <>
       <Button type="primary" onClick={showModal}>
-        <PlusCircleOutlined /> Add User
+        <PlusCircleOutlined /> Add Product
       </Button>
 
       <Modal
