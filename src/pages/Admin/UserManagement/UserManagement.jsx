@@ -40,7 +40,9 @@ export default function UserManagement() {
 
   const showModal = (variant, userId) => {
     setModalVariant(variant);
-    handleGetDetail(userId, adminUser.access_token);
+    if (userId) {
+      handleGetDetail(userId, adminUser.access_token);
+    }
     setModalVisible(true);
   };
 

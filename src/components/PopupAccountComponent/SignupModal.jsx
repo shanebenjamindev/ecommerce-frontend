@@ -13,7 +13,7 @@ export default function SignupPage() {
     phone: "",
   });
 
-  const handleOnchange = (e, formType) => {
+  const handleOnchange = (e) => {
     const updatedAccount = { ...accountSignup };
     updatedAccount[e.target.name] = e.target.value;
     setNewAccount(updatedAccount);
@@ -23,9 +23,10 @@ export default function SignupPage() {
   const handleSignupFormSubmit = () => {
     if (accountSignup) {
       mutation.mutate(accountSignup);
-      location.reload();
+      console.log(data);
     }
   };
+
   return (
     <Form form={form} onFinish={handleSignupFormSubmit}>
       <Form.Item

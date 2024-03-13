@@ -11,8 +11,8 @@ export const GetAllProduct = async () => {
   }
 };
 
-export const AddProduct = async (newData) => {
-  const res = await axios.post(`${VITE_SOME_KEY}/product/create`, newData);
+export const createProduct = async (data) => {
+  const res = await axios.post(`${VITE_SOME_KEY}/product/create`, data);
   return res.data;
 };
 

@@ -6,6 +6,7 @@ import ButtonComponent from "../../../components/ButtonComponent/ButtonComponent
 import { useState } from "react";
 import { PlusCircleOutlined } from "@ant-design/icons";
 import { userHook } from "../../../hooks/userHook";
+import PopupComponent from "../../../components/PopupComponent/PopupComponent";
 
 const rowSelection = {
   getCheckboxProps: (record) => ({
@@ -40,7 +41,10 @@ export default function ProductManagement() {
 
   const handleDeleteProduct = async (userId) => {
     try {
-      const res = await ProductService.DeleteProduct(userId, adminUser.access_token);
+      const res = await ProductService.DeleteProduct(
+        userId,
+        adminUser.access_token
+      );
       message.success(res.data.message);
       getAllProduct();
     } catch (error) {
@@ -59,8 +63,8 @@ export default function ProductManagement() {
     },
     {
       title: "Image",
-      dataIndex: "image",
       key: "image",
+      render: (product) => <img width={"50px"} src={product.image} />,
     },
     {
       title: "Type",
@@ -82,7 +86,12 @@ export default function ProductManagement() {
           >
             Edit
           </Button>
-          <Button type="danger" onClick={() => handleDeleteProduct(product._id, adminUser.access_token)}>
+          <Button
+            type="danger"
+            onClick={() =>
+              handleDeleteProduct(product._id, adminUser.access_token)
+            }
+          >
             Delete
           </Button>
         </Space>
@@ -92,15 +101,12 @@ export default function ProductManagement() {
 
   return (
     <div>
-      <PopupAccountComponent
+      <PopupComponent
         isVisible={modalVisible}
         variant={modalVariant}
         selectedUser={selectedUser}
         handleModalToggle={handleCancel}
       />
-      <Button type="primary" onClick={() => showModal("Add Form")}>
-        <PlusCircleOutlined /> Add User
-      </Button>
       <Table
         rowSelection={{
           type: "checkbox",

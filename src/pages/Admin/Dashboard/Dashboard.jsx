@@ -34,7 +34,7 @@ export default function Dashboard() {
 
   return (
     <Row gutter={40}>
-      <Col span={18}>
+      <Col span={20}>
         <h1>
           Welcome, <span>{user ? user.name : null}</span>
         </h1>
@@ -58,13 +58,13 @@ export default function Dashboard() {
         </DashboardOrderButton>
 
         <section className="my-4">
-          <h3>User Management</h3>
+          <h4>User Management</h4>
           <UserManagement />
         </section>
       </Col>
-      <Col span={6}>
+      <Col span={4}>
         <div className="list-selling">
-          Top Selling Products
+          <h4>Top Selling Products</h4>
           {renderTopSelling()}
         </div>
       </Col>
