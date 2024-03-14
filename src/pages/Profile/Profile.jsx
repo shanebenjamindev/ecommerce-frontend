@@ -1,44 +1,69 @@
 import { useSelector } from "react-redux";
-import { ProfileTable, WrapperProfileUser } from "./style";
+import {
+  ProfileTable,
+  WrapperProfileAvatar,
+  WrapperProfileUser,
+} from "./style";
 import { useEffect, useState } from "react";
 import InputForm from "../../components/InputForm/InputForm";
-import { Button, Col, Row } from "antd";
+import { Button, Col, Row, Space, Upload } from "antd";
 import ButtonComponent from "../../components/ButtonComponent/ButtonComponent";
 import { useMutationHook } from "../../hooks/useMutationHook";
-import * as UserService from '../../services/UserService'
+import * as UserService from "../../services/UserService";
+import { getBase64 } from "../../utils";
+import { UploadFileOutlined } from "@mui/icons-material";
+import { userHook } from "../../hooks/userHook";
 export default function Profile() {
-  const user = useSelector(state => state.user);
-  const [userAvatar, setAvatar] = useState("");
-  const [avatarPreview, setavatarPreview] = useState("");
+  const user = userHook();
 
   const [newUser, setUserData] = useState({
     name: user ? user.name : "",
     email: user ? user.email : "",
     phone: user ? user.phone : "",
+    avatar: user ? user.avatar : "",
     password: "",
-    confirmPassword: ""
+    confirmPassword: "",
   });
 
-  const mutation = useMutationHook(data => UserService.userUpdate(data, newUser));
+  const mutation = useMutationHook((data) =>
+    UserService.userUpdate(data, newUser, user?.access_token)
+  );
 
   const { data, isSuccess } = mutation;
 
+  const handleOnChangeAvatar = async ({ fileList }) => {
+    const file = fileList[0];
+    if (!file.url && !file.preview) {
+      file.preview = await getBase64(file.originFileObj);
+    }
+    setUserData({
+      ...newUser,
+      avatar: file.preview,
+    });
+  };
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
-    setUserData(prevData => ({
+    setUserData((prevData) => ({
       ...prevData,
-      [name]: value
+      [name]: value,
     }));
-  }
+  };
 
   const handleEditProfile = () => {
-    if (!newUser.name || !newUser.email || !newUser.password || !newUser.confirmPassword || !newUser.phone) {
+    if (
+      !newUser.name ||
+      !newUser.email ||
+      !newUser.password ||
+      !newUser.confirmPassword ||
+      !newUser.phone
+    ) {
       alert("Please fill in all required fields.");
       return;
     }
 
     mutation.mutate(user?.id, newUser);
-  }
+  };
 
   useEffect(() => {
     if (isSuccess) {
@@ -47,77 +72,148 @@ export default function Profile() {
       }, 2000);
       return () => clearTimeout(timeoutId);
     }
-  }, [isSuccess])
+  }, [isSuccess]);
 
   const renderUserInfo = () => {
     return (
       <WrapperProfileUser>
         <ProfileTable>
-          <table >
+          <table className="w-100">
             <tbody>
               <tr>
+                <h2>Hello, {user?.name}</h2>
               </tr>
               <tr>
                 <th>Name</th>
                 <td>
-                  <InputForm name="name" value={newUser.name} onChange={handleOnChange} />
+                  <InputForm
+                    name="name"
+                    value={newUser.name}
+                    onChange={handleOnChange}
+                  />
                 </td>
               </tr>
               <tr>
                 <th>Email</th>
                 <td>
-                  <InputForm name="email" value={newUser.email} onChange={handleOnChange} />
+                  <InputForm
+                    name="email"
+                    value={newUser.email}
+                    onChange={handleOnChange}
+                  />
                 </td>
               </tr>
               <tr>
                 <th>Password</th>
                 <td>
-                  <InputForm type="password" name="password" value={newUser.password} onChange={handleOnChange} />
+                  <InputForm
+                    type="password"
+                    name="password"
+                    value={newUser.password}
+                    onChange={handleOnChange}
+                  />
                 </td>
               </tr>
               <tr>
                 <th>Confirm Password</th>
                 <td>
-                  <InputForm type="password" name="confirmPassword" value={newUser.confirmPassword} onChange={handleOnChange} />
+                  <InputForm
+                    type="password"
+                    name="confirmPassword"
+                    value={newUser.confirmPassword}
+                    onChange={handleOnChange}
+                  />
                 </td>
               </tr>
               <tr>
                 <th>Phone</th>
                 <td>
-                  <InputForm name="phone" value={newUser.phone} onChange={handleOnChange} />
+                  <InputForm
+                    name="phone"
+                    value={newUser.phone}
+                    onChange={handleOnChange}
+                  />
+                </td>
+              </tr>
+              <tr>
+                <th></th>
+                <td>
+                  <Row gutter={30} justify="end">
+                    <Button onClick={handleEditProfile} type="Default">
+                      Clear
+                    </Button>
+                    <Button onClick={handleEditProfile} type="primary">
+                      Save
+                    </Button>
+                  </Row>
                 </td>
               </tr>
             </tbody>
-            {mutation && mutation?.data && <span>{mutation?.data.message}</span>}
 
-            <Row justify="end" style={{ marginTop: "16px" }}>
-              <ButtonComponent onClick={handleEditProfile} type="button" variant="primary" text="Edit Profile" />
-            </Row>
+            {mutation && mutation?.data && (
+              <span>{mutation?.data.message}</span>
+            )}
           </table>
         </ProfileTable>
-      </WrapperProfileUser >
+      </WrapperProfileUser>
     );
   };
 
   return (
     <div>
       {user ? (
-        <Row justify="center">
+        <Row gutter={30} justify="center">
           <Col span={12}>
-            <Row justify="center">
-              <img src={userAvatar} />
-              <InputForm type={"file"} accept="/image/*" onChange={(e) => {
-                const file = e.target.files[0];
-                if (file && file.type.subString(0, 5) === "image") {
-                  setAvatar(file)
-                }
-              }} />
-            </Row>
+            <WrapperProfileAvatar>
+              <div>
+                {user.avatar ? (
+                  <div>
+                    <img
+                      width={"100%"}
+                      height={"300px"}
+                      name="image"
+                      src={user.avatar}
+                      alt="productImage"
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    {newUser.avatar ? (
+                      <img
+                        width={"100%"}
+                        height={"300px"}
+                        name="image"
+                        src={newUser.avatar}
+                        alt="productImage"
+                      />
+                    ) : (
+                      <img
+                        alt="user"
+                        width={"100%"}
+                        height={"300px"}
+                        src={
+                          "https://cdn-icons-png.flaticon.com/512/149/149071.png"
+                        }
+                      />
+                    )}
+                  </div>
+                )}
+                <div className="text-center mt-2">
+                  <Upload onChange={handleOnChangeAvatar}>
+                    <Button
+                      icon={<UploadFileOutlined />}
+                      type="file"
+                      name="image"
+                    >
+                      Select
+                    </Button>
+                  </Upload>
+                </div>
+              </div>
+            </WrapperProfileAvatar>
           </Col>
 
-          <Col span={12}>
-            {renderUserInfo()}
-          </Col>
+          <Col span={12}>{renderUserInfo()}</Col>
         </Row>
       ) : (
         <h2>You havent logged in.</h2>

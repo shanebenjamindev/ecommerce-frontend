@@ -9,7 +9,7 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-import { Layout, Menu, Button, theme } from "antd";
+import { Layout, Menu, Button, theme, Space } from "antd";
 import UserManagement from "./UserManagement/UserManagement";
 import ProductManagement from "./ProductManagement/ProductManagement";
 import * as UserService from "../../services/UserService";
@@ -63,7 +63,21 @@ export default function Admin() {
   };
 
   const renderUser = () => {
-    return user ? <p>Hello, {user.name}</p> : null;
+    return user ? (
+      <Space align="center">
+        <Link to="/profile">
+          <img
+            width={"50px"}
+            height={"50px"}
+            src={user.avatar}
+            alt={user.name}
+          />
+        </Link>
+        <Button type="primary" danger onClick={handleLogout}>
+          Log out
+        </Button>
+      </Space>
+    ) : null;
   };
 
   return (

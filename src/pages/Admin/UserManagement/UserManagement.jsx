@@ -75,6 +75,10 @@ export default function UserManagement() {
       key: "name",
     },
     {
+      title: "Image",
+      render: (user) => <img width={"50px"} src={user.avatar} />,
+    },
+    {
       title: "Email",
       dataIndex: "email",
       key: "email",
@@ -94,7 +98,11 @@ export default function UserManagement() {
           >
             Edit
           </Button>
-          <Button type="primary" danger onClick={() => handleDeleteUser(user._id)}>
+          <Button
+            type="primary"
+            danger
+            onClick={() => handleDeleteUser(user._id)}
+          >
             Delete
           </Button>
         </Space>

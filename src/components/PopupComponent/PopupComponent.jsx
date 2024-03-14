@@ -42,7 +42,7 @@ const PopupComponent = () => {
     }
   };
   const resz = handleGetAllProduct();
-  console.log(resz);
+  
   const handleOnChangeAvatar = async ({ fileList }) => {
     const file = fileList[0];
     console.log(file);
@@ -54,6 +54,7 @@ const PopupComponent = () => {
       image: file.preview,
     });
   };
+
   const onFinish = () => {
     if (stateProduct) {
       mutation.mutate(stateProduct);

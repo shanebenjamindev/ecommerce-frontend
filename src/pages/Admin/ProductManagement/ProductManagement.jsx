@@ -1,6 +1,7 @@
 import { useQuery } from "react-query";
-import { Space, Table, Button } from "antd";
+import { Space, Table, Button, Row, Col } from "antd";
 import * as ProductService from "../../../services/ProductService";
+import * as TypeService from "../../../services/TypeService";
 import { userHook } from "../../../hooks/userHook";
 import PopupComponent from "../../../components/PopupComponent/PopupComponent";
 
@@ -11,7 +12,6 @@ const rowSelection = {
   }),
 };
 export default function ProductManagement() {
-
   const adminUser = userHook();
 
   const {
@@ -20,11 +20,21 @@ export default function ProductManagement() {
     isError,
   } = useQuery(["product"], () => handleGetAllProduct());
 
+  const {
+    data: types,
+    isLoading: typeLoading,
+    isError: typeError,
+  } = useQuery(["type"], () => handleGetAllType());
+
+  const handleGetAllType = async () => {
+    const res = await TypeService.getAllType();
+    return res.data;
+  };
   const handleGetAllProduct = async () => {
     const res = await ProductService.GetAllProduct();
     return res.data;
   };
-  
+
   const columns = [
     {
       title: "Name",
@@ -71,20 +81,34 @@ export default function ProductManagement() {
   ];
 
   return (
-    <div>
-      <PopupComponent
-        mode={"product"}
-        handleGetAllProduct = {handleGetAllProduct}
-      />
-      <Table
-        rowSelection={{
-          type: "checkbox",
-          ...rowSelection,
-        }}
-        dataSource={products}
-        columns={columns}
-        rowKey="_id"
-      />
-    </div>
+    <Row>
+      <Col span={14}>
+        <PopupComponent
+          mode={"product"}
+          handleGetAllProduct={handleGetAllProduct}
+        />
+        <Table
+          rowSelection={{
+            type: "checkbox",
+            ...rowSelection,
+          }}
+          dataSource={products}
+          columns={columns}
+          rowKey="_id"
+        />
+      </Col>
+      <Col span={10}>
+        Type
+        <Table
+          rowSelection={{
+            type: "checkbox",
+            ...rowSelection,
+          }}
+          dataSource={types}
+          columns={columns}
+          rowKey="_id"
+        />
+      </Col>
+    </Row>
   );
 }
