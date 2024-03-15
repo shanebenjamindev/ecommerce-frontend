@@ -83,10 +83,7 @@ export default function ProductManagement() {
   return (
     <Row>
       <Col span={14}>
-        <PopupComponent
-          mode={"product"}
-          handleGetAllProduct={handleGetAllProduct}
-        />
+        <PopupComponent mode={"product-add"} types={types} />
         <Table
           rowSelection={{
             type: "checkbox",

@@ -8,7 +8,12 @@ import {
   ShoppingCartOutlined,
   SmileOutlined,
 } from "@ant-design/icons";
-import { SearchButton, WrapperSearch } from "./style";
+import {
+  SearchButton,
+  UserAvatarWrapper,
+  WrapperContentDropdown,
+  WrapperSearch,
+} from "./style";
 import { useEffect, useState } from "react";
 import * as UserService from "../../services/UserService";
 import { useDispatch, useSelector } from "react-redux";
@@ -17,6 +22,7 @@ import PopupAccountComponent from "../PopupAccountComponent/PopupAccountComponen
 import Loading from "../LoadingComponent/LoadingComponent";
 import { jwtDecode } from "jwt-decode";
 import { userHook } from "../../hooks/userHook";
+import PopupSelectionComponent from "../PopupSelectionComponent/PopupSelectionComponent";
 
 export default function HeaderComponent() {
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -42,31 +48,14 @@ export default function HeaderComponent() {
     }
   };
 
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-  const handleLogout = async () => {
-    setLoading(true);
-    await UserService.userLogout();
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    dispatch(resetUser());
-    navigate("/");
-    setLoading(false);
-  };
-
   const contentDropdown = (
     <Col>
-      <Link to={`/profile`}>Trang cá nhân</Link>
-      <Row justify={"center"}>
-        <button width={"100%"} onClick={handleLogout}>
-          Log Out
-        </button>
-      </Row>
-      {user?.isAdmin && (
-        <Row>
-          <Link to="/admin/dashboard">Trang Quản trị</Link>
-        </Row>
-      )}
+      <WrapperContentDropdown>
+        {user?.isAdmin && <Link to="/admin/dashboard">Trang Quản trị</Link>}
+        <Link to={`/profile`}>Trang cá nhân</Link>
+
+        <PopupSelectionComponent title ="Log out" children="Log Out" />
+      </WrapperContentDropdown>
     </Col>
   );
 
@@ -130,37 +119,37 @@ export default function HeaderComponent() {
                       />
                     </Link>
                   </li>
-                  <Loading isLoading={loading}>
-                    {user?.name ? (
-                      <li className="nav-item">
-                        <Popover placement="bottom" content={contentDropdown}>
+                  {user?.name ? (
+                    <li className="nav-item">
+                      <Popover placement="bottom" content={contentDropdown}>
+                        <UserAvatarWrapper>
                           <Link className="nav-link d-flex" to={`/profile`}>
                             <img
-                              width="25"
-                              height="25"
-                              alt=""
+                              width="30"
+                              height="30"
+                              alt="user avatar"
                               src={
                                 user?.avatar ||
                                 "https://cdn-icons-png.flaticon.com/512/149/149071.png"
                               }
                             />
                           </Link>
-                        </Popover>
-                      </li>
-                    ) : (
-                      <li onClick={showModal}>
-                        <ButtonComponent
-                          className="nav-link"
-                          variant="button-secondary"
-                          text={
-                            <>
-                              <SmileOutlined /> Tài khoản
-                            </>
-                          }
-                        />
-                      </li>
-                    )}
-                  </Loading>
+                        </UserAvatarWrapper>
+                      </Popover>
+                    </li>
+                  ) : (
+                    <li onClick={showModal}>
+                      <ButtonComponent
+                        className="nav-link"
+                        variant="button-secondary"
+                        text={
+                          <>
+                            <SmileOutlined /> Tài khoản
+                          </>
+                        }
+                      />
+                    </li>
+                  )}
 
                   <li className="nav-item">
                     <ButtonComponent

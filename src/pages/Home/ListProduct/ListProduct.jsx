@@ -26,5 +26,10 @@ export default function ListProduct() {
       return <ItemComponent key={index} product={product} />;
     });
   };
-  return <Row className="justify-content-center">{renderProduct()}</Row>;
+  return (
+    <>
+      <h5>List Product</h5>
+      <Row className="section-content justify-content-center">{renderProduct()}</Row>
+    </>
+  );
 }

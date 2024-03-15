@@ -42,6 +42,17 @@ export default function Profile() {
     });
   };
 
+  const handleClearProfile = () => {
+    setUserData({
+      name: "",
+      email: "",
+      phone: "",
+      avatar: "",
+      password: "",
+      confirmPassword: "",
+    });
+  };
+
   const handleOnChange = (e) => {
     const { name, value } = e.target;
     setUserData((prevData) => ({
@@ -66,94 +77,82 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    if (isSuccess) {
-      const timeoutId = setTimeout(() => {
-        window.location.reload();
-      }, 2000);
-      return () => clearTimeout(timeoutId);
-    }
+    console.log(mutation);
   }, [isSuccess]);
 
   const renderUserInfo = () => {
     return (
       <WrapperProfileUser>
+        <h4>Hello, {user?.name}</h4>
         <ProfileTable>
-          <table className="w-100">
-            <tbody>
-              <tr>
-                <h2>Hello, {user?.name}</h2>
-              </tr>
-              <tr>
-                <th>Name</th>
-                <td>
-                  <InputForm
-                    name="name"
-                    value={newUser.name}
-                    onChange={handleOnChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <th>Email</th>
-                <td>
-                  <InputForm
-                    name="email"
-                    value={newUser.email}
-                    onChange={handleOnChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <th>Password</th>
-                <td>
-                  <InputForm
-                    type="password"
-                    name="password"
-                    value={newUser.password}
-                    onChange={handleOnChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <th>Confirm Password</th>
-                <td>
-                  <InputForm
-                    type="password"
-                    name="confirmPassword"
-                    value={newUser.confirmPassword}
-                    onChange={handleOnChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <th>Phone</th>
-                <td>
-                  <InputForm
-                    name="phone"
-                    value={newUser.phone}
-                    onChange={handleOnChange}
-                  />
-                </td>
-              </tr>
-              <tr>
-                <th></th>
-                <td>
-                  <Row gutter={30} justify="end">
-                    <Button onClick={handleEditProfile} type="Default">
-                      Clear
-                    </Button>
-                    <Button onClick={handleEditProfile} type="primary">
-                      Save
-                    </Button>
-                  </Row>
-                </td>
-              </tr>
-            </tbody>
-
-            {mutation && mutation?.data && (
-              <span>{mutation?.data.message}</span>
-            )}
-          </table>
+          <tbody>
+            <tr>
+              <th>Name</th>
+              <td>
+                <InputForm
+                  name="name"
+                  value={newUser.name}
+                  onChange={handleOnChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>Email</th>
+              <td>
+                <InputForm
+                  type="email"
+                  name="email"
+                  value={newUser.email}
+                  onChange={handleOnChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>Password</th>
+              <td>
+                <InputForm
+                  type="password"
+                  name="password"
+                  value={newUser.password}
+                  onChange={handleOnChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>Confirm Password</th>
+              <td>
+                <InputForm
+                  type="password"
+                  name="confirmPassword"
+                  value={newUser.confirmPassword}
+                  onChange={handleOnChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th>Phone</th>
+              <td>
+                <InputForm
+                  name="phone"
+                  value={newUser.phone}
+                  onChange={handleOnChange}
+                />
+              </td>
+            </tr>
+            <tr>
+              <th></th>
+              <td>
+                <Row gutter={30} justify="end">
+                  <Button onClick={handleClearProfile} type="Default">
+                    Clear
+                  </Button>
+                  <Button onClick={handleEditProfile} type="primary">
+                    Save
+                  </Button>
+                </Row>
+              </td>
+            </tr>
+          </tbody>
         </ProfileTable>
       </WrapperProfileUser>
     );
@@ -216,7 +215,7 @@ export default function Profile() {
           <Col span={12}>{renderUserInfo()}</Col>
         </Row>
       ) : (
-        <h2>You havent logged in.</h2>
+        <p>You havent logged in.</p>
       )}
     </div>
   );

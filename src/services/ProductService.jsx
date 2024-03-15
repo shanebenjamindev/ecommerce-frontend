@@ -12,7 +12,9 @@ export const GetAllProduct = async () => {
 };
 
 export const createProduct = async (data) => {
+  console.log(data);
   const res = await axios.post(`${VITE_SOME_KEY}/product/create`, data);
+  console.log(res.data);
   return res.data;
 };
 

@@ -1,7 +1,7 @@
 import { Route } from "react-router-dom";
 import { lazy } from "react";
 
-const routes = [
+export const routes = [
   {
     path: "",
     element: lazy(() => import("../Templates/Template")),

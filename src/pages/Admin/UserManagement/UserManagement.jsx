@@ -5,6 +5,7 @@ import { useSelector } from "react-redux";
 import { useMutation, useQuery } from "react-query";
 import PopupAccountComponent from "../../../components/PopupAccountComponent/PopupAccountComponent";
 import { PlusCircleOutlined } from "@ant-design/icons";
+import PopupComponent from "../../../components/PopupComponent/PopupComponent";
 
 const rowSelection = {
   getCheckboxProps: (record) => ({
@@ -112,15 +113,7 @@ export default function UserManagement() {
 
   return (
     <div>
-      <PopupAccountComponent
-        isVisible={modalVisible}
-        variant={modalVariant}
-        selectedUser={selectedUser}
-        handleModalToggle={handleCancel}
-      />
-      <Button type="primary" onClick={() => showModal("Add Form")}>
-        <PlusCircleOutlined /> Add User
-      </Button>
+      <PopupComponent mode={"user-add"} />
       <Table
         rowSelection={{
           type: "checkbox",
